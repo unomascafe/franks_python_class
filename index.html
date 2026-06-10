@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frank's Python Class</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
+  <style>
+    :root {
+      --theme-color: #3776ab; /* Python blue */
+    }
+
+    /* Sidebar */
+    .sidebar {
+      padding-top: 20px;
+    }
+    .sidebar-nav > ul > li > a {
+      font-weight: 700;
+      color: #3776ab;
+    }
+
+    /* Progress widget */
+    #progress-widget {
+      background: #f0f6ff;
+      border: 1px solid #c8dff7;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0 24px;
+    }
+    #progress-widget h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #333;
+      font-weight: 600;
+    }
+    .progress-bar-wrap {
+      background: #dde8f5;
+      border-radius: 6px;
+      height: 14px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3776ab, #ffd43b);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+    .progress-meta {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      justify-content: space-between;
+    }
+    .progress-next {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #3776ab;
+    }
+    .progress-next a {
+      color: #3776ab;
+      font-weight: 600;
+    }
+
+    /* Lesson nav links at bottom of each page */
+    .lesson-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    /* Code blocks */
+    .markdown-section pre {
+      background: #1e1e2e !important;
+    }
+    .markdown-section code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Loading...</div>
+
+  <script>
+    // ── Lesson registry (mirrors tracker.py) ─────────────────────────────────
+    const LESSONS = [
+      { num: 1,  mod: "Module 1", title: "Setup & Your First Script",     path: "python-course/module-1/01-setup" },
+      { num: 2,  mod: "Module 1", title: "Variables & Data Types",         path: "python-course/module-1/02-variables-and-types" },
+      { num: 3,  mod: "Module 1", title: "Strings",                        path: "python-course/module-1/03-strings" },
+      { num: 4,  mod: "Module 1", title: "Numbers & Math",                 path: "python-course/module-1/04-numbers" },
+      { num: 5,  mod: "Module 1", title: "Lists",                          path: "python-course/module-1/05-lists" },
+      { num: 6,  mod: "Module 1", title: "Dictionaries",                   path: "python-course/module-1/06-dicts" },
+      { num: 7,  mod: "Module 1", title: "Conditionals",                   path: "python-course/module-1/07-conditionals" },
+      { num: 8,  mod: "Module 1", title: "Loops",                          path: "python-course/module-1/08-loops" },
+      { num: 9,  mod: "Module 1", title: "Functions",                      path: "python-course/module-1/09-functions" },
+      { num: 10, mod: "Module 1", title: "Error Handling",                 path: "python-course/module-1/10-errors" },
+      { num: 11, mod: "Module 2", title: "Reading & Writing Files",        path: "python-course/module-2/11-file-io" },
+      { num: 12, mod: "Module 2", title: "CSV & JSON",                     path: "python-course/module-2/12-csv-json" },
+      { num: 13, mod: "Module 2", title: "Libraries & pip",                path: "python-course/module-2/13-libraries" },
+      { num: 14, mod: "Module 2", title: "Dates & Times",                  path: "python-course/module-2/14-dates" },
+      { num: 15, mod: "Module 3", title: "File System Ops",                path: "python-course/module-3/15-filesystem" },
+      { num: 16, mod: "Module 3", title: "Shell Commands",                 path: "python-course/module-3/16-shell" },
+      { num: 17, mod: "Module 3", title: "HTTP Requests & APIs",           path: "python-course/module-3/17-requests" },
+      { num: 18, mod: "Module 3", title: "Web Scraping",                   path: "python-course/module-3/18-scraping" },
+      { num: 19, mod: "Module 3", title: "Automation Scripts",             path: "python-course/module-3/19-automation" },
+      { num: 20, mod: "Module 4", title: "Pandas: DataFrames",             path: "python-course/module-4/20-pandas-basics" },
+      { num: 21, mod: "Module 4", title: "Cleaning & Transforming Data",   path: "python-course/module-4/21-data-cleaning" },
+      { num: 22, mod: "Module 4", title: "Visualizations",                 path: "python-course/module-4/22-visualization" },
+      { num: 23, mod: "Module 4", title: "Excel & Spreadsheets",           path: "python-course/module-4/23-excel" },
+      { num: 24, mod: "Module 5", title: "Command-Line Tools",             path: "python-course/module-5/24-cli-tools" },
+      { num: 25, mod: "Module 5", title: "Flask Web Apps",                 path: "python-course/module-5/25-flask" },
+      { num: 26, mod: "Module 5", title: "Building & Consuming APIs",      path: "python-course/module-5/26-apis" },
+      { num: 27, mod: "Module 5", title: "Databases with SQLite",          path: "python-course/module-5/27-databases" },
+      { num: 28, mod: "Module 6", title: "Working with AI APIs",           path: "python-course/module-6/28-ai-apis" },
+      { num: 29, mod: "Module 6", title: "Building AI-Powered Tools",      path: "python-course/module-6/29-ai-tools" },
+      { num: 30, mod: "Module 6", title: "Intro to Machine Learning",      path: "python-course/module-6/30-ml-intro" },
+    ];
+
+    // ── Progress widget ───────────────────────────────────────────────────────
+    function renderProgress(data) {
+      const completed = new Set(data.completed || []);
+      const total = LESSONS.length;
+      const done = completed.size;
+      const pct = Math.round(100 * done / total);
+      const next = LESSONS.find(l => !completed.has(l.num));
+
+      const started = data.started ? ` · Started ${data.started}` : '';
+      const updated = data.last_updated ? ` · Last push ${data.last_updated}` : '';
+
+      const nextHtml = next
+        ? `<div class="progress-next">▶ Next up: <a href="#/${next.path}">Lesson ${next.num.toString().padStart(2,'0')} — ${next.title}</a></div>`
+        : `<div class="progress-next">🎉 Course complete!</div>`;
+
+      return `
+        <div id="progress-widget">
+          <h3>🐍 Your Progress</h3>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="progress-meta">
+            <span>${done} / ${total} lessons complete (${pct}%)</span>
+            <span style="color:#999;font-size:12px">${(started + updated).replace(/^·\s*/, '')}</span>
+          </div>
+          ${nextHtml}
+        </div>`;
+    }
+
+    // ── Docsify config ────────────────────────────────────────────────────────
+    window.$docsify = {
+      name: "🐍 Python Class",
+      repo: "",
+      loadSidebar: true,
+      alias: { "/.*/_sidebar.md": "/_sidebar.md" },
+      subMaxLevel: 2,
+      homepage: "README.md",
+      auto2top: true,
+      noEmoji: false,
+      search: {
+        placeholder: "Search lessons...",
+        noData: "No results.",
+        depth: 3,
+      },
+      plugins: [
+        // Inject progress widget on homepage
+        function(hook, vm) {
+          hook.doneEach(function() {
+            const slot = document.getElementById("progress-widget");
+            if (!slot) return;
+
+            // Already populated this render cycle
+            if (slot.dataset.loaded === "true") return;
+            slot.dataset.loaded = "true";
+
+            slot.innerHTML = "<em style='color:#999;font-size:13px'>Loading progress...</em>";
+
+            fetch("python-course/progress.json?nocache=" + Date.now())
+              .then(r => r.json())
+              .then(data => { slot.outerHTML = renderProgress(data); })
+              .catch(() => {
+                slot.innerHTML = "<em style='color:#bbb;font-size:13px'>Progress unavailable — push progress.json to see your status.</em>";
+              });
+          });
+        },
+      ],
+    };
+  </script>
+
+  <!-- Docsify core -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <!-- Search plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <!-- Syntax highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+</body>
+</html>
